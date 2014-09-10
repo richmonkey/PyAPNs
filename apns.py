@@ -169,6 +169,13 @@ class APNs(object):
         return self._gateway_connection
 
 
+
+def set_keepalive_linux(sock, after_idle_sec=1, interval_sec=3, max_fails=5):
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, after_idle_sec)
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, interval_sec)
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, max_fails)
+
 class APNsConnection(object):
     """
     A generic connection class for communicating with the APNs
@@ -195,6 +202,7 @@ class APNsConnection(object):
                 self._socket = socket(AF_INET, SOCK_STREAM)
                 self._socket.settimeout(self.timeout)
                 self._socket.connect((self.server, self.port))
+                set_keepalive_linux(self._socket, 10*60, 10*60, 3)
                 break
             except timeout:
                 pass
