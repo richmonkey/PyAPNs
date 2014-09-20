@@ -25,6 +25,7 @@
 
 from binascii import a2b_hex, b2a_hex
 from datetime import datetime
+import socket as msocket
 from socket import socket, timeout, AF_INET, SOCK_STREAM
 from socket import error as socket_error
 from struct import pack, unpack
@@ -171,10 +172,10 @@ class APNs(object):
 
 
 def set_keepalive_linux(sock, after_idle_sec=1, interval_sec=3, max_fails=5):
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, after_idle_sec)
-    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, interval_sec)
-    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, max_fails)
+    sock.setsockopt(msocket.SOL_SOCKET, msocket.SO_KEEPALIVE, 1)
+    sock.setsockopt(msocket.IPPROTO_TCP, msocket.TCP_KEEPIDLE, after_idle_sec)
+    sock.setsockopt(msocket.IPPROTO_TCP, msocket.TCP_KEEPINTVL, interval_sec)
+    sock.setsockopt(msocket.IPPROTO_TCP, msocket.TCP_KEEPCNT, max_fails)
 
 class APNsConnection(object):
     """
