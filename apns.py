@@ -262,9 +262,24 @@ class APNsConnection(object):
     def write(self, string):
 #         return self._connection().write(string)
         if self.enhanced: # nonblocking socket
-            _, wlist, _ = select.select([], [self._connection()], [])
-            if len(wlist) > 0:
-                self._connection().sendall(string)
+            while True:
+                try:
+                    _, wlist, _ = select.select([], [self._connection()], [])
+                    if len(wlist) > 0:
+                        self._connection().sendall(string)
+                        break
+                    else:
+                        _logger.info("can't write to socket")
+                        break
+                except ssl.SSLError, err:
+                    if ssl.SSL_ERROR_WANT_READ == err.args[0]:
+                        _logger.info("ssl error want read")
+                        continue
+                    elif ssl.SSL_ERROR_WANT_WRITE == err.args[0]:
+                        _logger.info("ssl error want write")
+                        continue
+                    else:
+                        raise
         else: # blocking socket
              return self._connection().write(string)
 
